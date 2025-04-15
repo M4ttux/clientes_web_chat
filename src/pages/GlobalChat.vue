@@ -84,66 +84,61 @@ export default {
 </script>
 
 <template>
-    <MainH1>Chat Global</MainH1>
+  <div class="flex items-center justify-center bg-gray-900 min-h-full px-4">
+    <div class="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-4xl">
+      <MainH1 class="text-white text-center mb-6">Chat Global</MainH1>
 
-    <div class="flex gap-4">
+      <div class="flex gap-8">
+        <!-- Mensajes -->
         <div 
-            ref="chatContainer"
-            class="overflow-y-auto w-9/12 h-100 p-4 border border-gray-400 rounded"
+          ref="chatContainer"
+          class="overflow-y-auto w-2/3 h-[60vh] p-4 border border-gray-600 rounded-lg bg-gray-700 text-white"
         >
-            <h2 class="sr-only">Lista de Mensajes</h2>
-
-            <ul>
-                <li 
-                    v-for="message in messages"
-                    class="flex flex-col gap-1 mb-4"
-                >
-                    <div><b>{{ message.email }}</b> dijo:</div>
-                    <div>{{ message.body }}</div>
-                    <div class="text-sm text-gray-600">{{ message.created_at }}</div>
-                </li>
-            </ul>
+          <h2 class="sr-only">Lista de Mensajes</h2>
+          <ul>
+            <li v-for="message in messages" :key="message.id" class="flex flex-col gap-2 mb-4">
+              <div class="text-sm font-semibold text-blue-400">{{ message.email }} dijo:</div>
+              <div class="text-lg">{{ message.body }}</div>
+              <div class="text-xs text-gray-500">{{ message.created_at }}</div>
+            </li>
+          </ul>
         </div>
-        <div class="col-3/12 p-4">
-            <h2 class="mb-4 text-2xl">Enviar un mensaje</h2>
 
-            <!-- 
-            Para asociar eventos en Vue usamos la directiva:
-                v-on:evento
-            O su forma abreviada:
-                @evento
-            Como valor debe llevar la función que queremos ejecutar con el evento.
-            Adicionalmente, Vue nos permite agregar modificadores al evento, que agregan algún comportamiento o 
-            verificación extra. Por ejemplo, el ".prevent" que ejecuta un "preventDefault()".
-            -->
-            <form 
-                action="#"
-                @submit.prevent="() => sendMessage()"
+        <!-- Enviar Mensaje -->
+        <div class="w-1/3 p-4 bg-gray-700 rounded-lg">
+          <h2 class="text-2xl text-white mb-4">Enviar un mensaje</h2>
+
+          <form action="#" @submit.prevent="sendMessage">
+            <div class="mb-4">
+              <label for="email" class="block mb-2 text-gray-300">Email:</label>
+              <input
+                type="email"
+                id="email"
+                class="w-full px-4 py-2 border border-gray-600 rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                v-model="newMessage.email"
+                placeholder="Ingresa tu correo"
+              >
+            </div>
+
+            <div class="mb-4">
+              <label for="body" class="block mb-2 text-gray-300">Mensaje:</label>
+              <textarea
+                id="body"
+                class="w-full px-4 py-2 border border-gray-600 rounded bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                v-model="newMessage.body"
+                placeholder="Escribe tu mensaje"
+              ></textarea>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-lg transition duration-200"
             >
-                <div class="mb-4">
-                    <label for="email" class="block mb-2">Email:</label>
-                    <!-- 
-                    v-model es una directiva que agrega un evento y un bindeo para generar un "two-way data binding".
-                    "Two-day data binding" significa que quedan vinculados el valor del state y el valor del input,
-                    de manera tal que si uno cambia, el otro se actualiza automáticamente.
-                    -->
-                    <input
-                        type="email"
-                        id="email"
-                        class="w-full px-4 py-2 border border-gray-400 rounded"
-                        v-model="newMessage.email"
-                    >
-                </div>
-                <div class="mb-4">
-                    <label for="body" class="block mb-2">Mensaje:</label>
-                    <textarea
-                        id="body"
-                        class="w-full px-4 py-2 border border-gray-400 rounded"
-                        v-model="newMessage.body"
-                    ></textarea>
-                </div>
-                <button type="submit" class="transition px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 focus:bg-blue-500 text-white">Enviar</button>
-            </form>
+              Enviar
+            </button>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 </template>

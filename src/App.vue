@@ -16,49 +16,35 @@ export default {
 </script>
 
 <template>
-    <!-- 
-    Hay varias convenciones comunes en las clases de Tailwind:
-    - Hay ciertas clases que solo llevan como nombre el valor del estilo. Por ejemplo, las clases para "display".
-        Si queremos un:
-            display: flex           => flex
-            display: block          => block
-            display: inline-block   => inline-block
-    - La mayoría de las clases se componen de al menos 2 partes: nombre-valor
-        Por ejemplo: margin, padding, background, gap, color (text-), etc.
-        Si queremos un:
-            margin: 1rem            => m-4
-            padding-top: .5rem      => pt-2
-            background-color: #fff  => bg-white
-    - Hay ciertos estilos que tienen una lista default de posibles valores aceptados.
-        Por ejemplo: font-size (text-), justify-contents (justify-), etc.
-        Si queremos un:
-            margin: 1rem            => m-4
-            padding-top: .5rem      => pt-2
-            background-color: #fff  => bg-white
-    -->
-    <nav class="flex gap-8 p-4 bg-slate-300">
-        <a class="text-lg" href="#">DV Social</a>
-        <ul class="flex gap-4">
-            <li>
-                <!-- <RouterLink to="/">Home</RouterLink> -->
-                <router-link to="/">Home</router-link>
-            </li>
-            <li>
-                <router-link to="/chat-global">Chat Global</router-link>
-            </li>
-            <li>
-                <router-link to="/ingresar">Iniciar Sesión</router-link>
-            </li>
-            <li>
-                <router-link to="/registro">Registrarse</router-link>
-            </li>
+    <div class="min-h-screen flex flex-col bg-gray-900 text-white">
+      <!-- NAVBAR -->
+      <nav class="flex justify-between items-center px-6 py-4 bg-gray-800 shadow-md">
+        <a href="#" class="text-2xl font-bold text-white">DV Social</a>
+        <ul class="flex gap-6 text-sm font-medium">
+          <li>
+            <router-link to="/" class="hover:text-blue-400 transition">Home</router-link>
+          </li>
+          <li>
+            <router-link to="/chat-global" class="hover:text-blue-400 transition">Chat Global</router-link>
+          </li>
+          <li>
+            <router-link to="/ingresar" class="hover:text-blue-400 transition">Iniciar Sesión</router-link>
+          </li>
+          <li>
+            <router-link to="/registro" class="hover:text-blue-400 transition">Registrarse</router-link>
+          </li>
         </ul>
-    </nav>
-    <div class="container mx-auto p-4">
+      </nav>
+  
+      <!-- CONTENIDO PRINCIPAL -->
+      <main class="flex-grow container mx-auto px-4 py-6">
         <router-view />
-        <!-- <RouterView /> -->
+      </main>
+  
+      <!-- FOOTER -->
+      <footer class="bg-gray-800 py-4 text-center text-sm text-gray-400 border-t border-gray-700">
+        Da Vinci &copy; 2025
+      </footer>
     </div>
-    <footer class="flex justify-center items-center h-25 bg-slate-800 text-white">
-        <p>Da Vinci &copy; 2025</p>
-    </footer>
-</template>
+  </template>
+  
