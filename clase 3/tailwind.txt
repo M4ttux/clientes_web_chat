@@ -1,0 +1,7 @@
+# Tailwind CSS
+
+es un framework css que nos permite crear estilos de forma rápida y eficiente. 
+
+En css, frameworks de componentes como Bootstrap, suelen incluir clases que aplican una potencialmente larga lista de estilos.
+
+Los frameworks de utilidades, como Tailwind, tiene la idea de trabajar de manera atómicas las clases, es decir, que cada clase solo aplica un estilo.

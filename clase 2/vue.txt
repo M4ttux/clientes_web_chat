@@ -1,0 +1,23 @@
+#Instalacion de VUE
+
+
+1) Instalar VUE
+
+    npm install vue@latest
+
+2) Agregar plugin de Vue para Vite
+
+    npm install --save-dev @vitejs/plugin-vue
+    npm install -D @vitejs/plugin-vue
+
+    https://github.com/vitejs/vite-plugin-vue/blob/main/packages/plugin-vue/README.md
+
+3) Configurar el archivo de Vite para usar el plugin
+
+    // vite.config.js
+        import vue from '@vitejs/plugin-vue'
+
+        export default {
+        plugins: [vue()],
+        }
+
