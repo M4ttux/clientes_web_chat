@@ -68,7 +68,7 @@ export default {
             // se calcule el alto del scroll del contenedor del chat, y lo movamos al final.
             // Esos son dos pasos diferentes en cuando al "redraw" del browser. Para que el scroll del contenedor se
             // actualice, necesitamos que el browser renderice primero en el DOM todos los mensajes.
-            // Por defecto, Vue no actualiza el DOM instantánmeamente cada vez que modificamos algo del componente.
+            // Por defecto, Vue no actualiza el DOM instantáneamente cada vez que modificamos algo del componente.
             // Para optimizar la performance (ya que el "redraw" es de las tareas más intensivas para el browsers), 
             // Vue "agrupa" (batch) varias acciones de modificación del DOM, y las ejecuta todas juntas.
             // En la mayoría de los casos, es el camino ideal para seguir.
@@ -99,7 +99,7 @@ export default {
             <li v-for="message in messages" :key="message.id" class="flex flex-col gap-2 mb-4">
               <div class="text-sm font-semibold text-blue-400">{{ message.email }} dijo:</div>
               <div class="text-lg">{{ message.body }}</div>
-              <div class="text-xs text-gray-500">{{ message.created_at }}</div>
+              <div class="text-xs text-gray-200/40">{{ message.created_at }}</div>
             </li>
           </ul>
         </div>
@@ -107,8 +107,7 @@ export default {
         <!-- Enviar Mensaje -->
         <div class="w-1/3 p-4 bg-gray-700 rounded-lg">
           <h2 class="text-2xl text-white mb-4">Enviar un mensaje</h2>
-
-          <form action="#" @submit.prevent="sendMessage">
+          <form action="#" @submit.prevent="() => sendMessage">
             <div class="mb-4">
               <label for="email" class="block mb-2 text-gray-300">Email:</label>
               <input
