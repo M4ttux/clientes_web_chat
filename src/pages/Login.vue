@@ -17,7 +17,9 @@ export default {
     async handleSubmit() {
       try {
         const user = await login(this.user.email, this.user.password);
-        console.log("Usuario logueado: ", user);
+        // console.log("Usuario logueado: ", user);
+        // Si el login es exitoso, podemos redirigir al usuario.
+        this.$router.push({ name: "chat-global" });
         // Podemos emitir un evento "login" que pase la data del usuario autenticado.
         // this.$emit nos permite hacer que el componente emita un evento arbitrario al componente contenedor.
         // Recibe como primer argumento un string con el nombre del evento (puede ser lo que quieran), y como

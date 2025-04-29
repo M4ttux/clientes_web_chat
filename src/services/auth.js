@@ -1,5 +1,5 @@
-// Auth service
 import supabase from "./supabase";
+import {addUserProfile} from "./user-profile";
 
 /*
     # Patrón de diseño: Observer
@@ -30,23 +30,31 @@ let user = {
     id: null,
     email: null,
 }
+
 // Definimos un array para la lista de observers.
 let observers = [];
+
 // Invocamos la carga del usuario actual inmediatamente.
 loadCurrentUser();
 
 async function loadCurrentUser() {
     const { data } = await supabase.auth.getUser();
+
     // Si no hay un usuario, retornamos null.
     if (!data?.user) return null;
+
     // Actualizamos los datos del usuario, y notificamos a los observers.
-    user = {
+    updateUser({
+        id: data.user.id,
+        email: data.user.email,
+    });
+
+    /* user = {
         ...user,
         id: data.user.id,
         email: data.user.email,
     }
-    notifyAll();
-    
+    notifyAll(); */
 }
 
 /**
@@ -57,34 +65,56 @@ async function loadCurrentUser() {
  */
 
 export async function register(email, password) {
+
     // Registramos el usuario en Supabase.
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
     });
+
     // Si hay un error, lo lanzamos.
     if (error) {
         console.error("[auth.js register] Error al registrar el usuario: ", error);
         throw error;
     }
+
+    // Creamos el perfil del usuario.
+    try {
+        await addUserProfile({
+            id: data.user.id,
+            email,
+        });
+    } catch (error) {
+        console.error("[auth.js register] Error al crear el perfil del usuario: ", error);
+        throw error;
+    }
+
     // Actualizamos los datos del usuario, y notificamos a los observers.
-    user = {
+    updateUser({
+        id: data.user.id,
+        email: data.user.email,
+    });
+
+    // Actualizamos los datos del usuario, y notificamos a los observers.
+    /* user = {
         ...user,
         id: data.user.id,
         email: data.user.email,
     }
-    notifyAll();
+    notifyAll(); */
     // Retornamos los datos del usuario.
     console.log("[auth.js register] Usuario registrado exitosamente:", data);
     return data.user;
 }
 
 export async function login(email, password) {
+
     // Logueamos el usuario en Supabase.
     const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
     });
+
     // Si hay un error, lo lanzamos.
     if (error) {
         console.error("[auth.js login] Error al loguear el usuario: ", error);
@@ -92,27 +122,39 @@ export async function login(email, password) {
     }
 
     // Actualizamos los datos del usuario, y notificamos a los observers.
-    user = {
+    updateUser({
+        id: data.user.id,
+        email: data.user.email,
+    });
+
+    /* user = {
         ...user,
         id: data.user.id,
         email: data.user.email,
     }
-    notifyAll();
+    notifyAll(); */
+
     // Retornamos los datos del usuario.
     console.log("[auth.js login] Usuario logueado exitosamente:", data);
     return data.user;
-
 }
 
 export async function logout() {
+
     // Cerramos la sesión en Supabase.
     supabase.auth.signOut();
+
     // Vaciamos el usuario.
-    user = {
+    updateUser({
+        id: null,
+        email: null,
+    });
+
+    /* user = {
         id: null,
         email: null,
     }
-    notifyAll();
+    notifyAll(); */
     console.log("[auth.js logout] Usuario cerró sesión exitosamente.");
 }
 
@@ -152,3 +194,15 @@ function notifyAll() {
     observers.forEach(callback => notify(callback));
 }
 
+/**
+ * Actualiza la data del usuario con la info provista, y notifica a todos los observers.
+ * 
+ * @param {{id: string|null, email: string|null}} data 
+ */
+function updateUser(data) {
+    user = {
+        ...user,
+        ...data,
+    }
+    notifyAll();
+}
