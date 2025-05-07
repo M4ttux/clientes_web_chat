@@ -1,5 +1,5 @@
 import supabase from "./supabase";
-import {addUserProfile} from "./user-profile";
+import { addUserProfile, getUserProfileByPK, updateUserProfile } from "./user-profile";
 
 /*
     # Patrón de diseño: Observer
@@ -29,19 +29,24 @@ import {addUserProfile} from "./user-profile";
 let user = {
     id: null,
     email: null,
+    bio: null,
+    display_name: null,
+    career: null,
 }
-
 // Definimos un array para la lista de observers.
 let observers = [];
 
 // Invocamos la carga del usuario actual inmediatamente.
 loadCurrentUser();
 
+/**
+ * 
+ */
 async function loadCurrentUser() {
     const { data } = await supabase.auth.getUser();
 
     // Si no hay un usuario, retornamos null.
-    if (!data?.user) return null;
+    if(!data?.user) return null;
 
     // Actualizamos los datos del usuario, y notificamos a los observers.
     updateUser({
@@ -49,44 +54,53 @@ async function loadCurrentUser() {
         email: data.user.email,
     });
 
-    /* user = {
-        ...user,
-        id: data.user.id,
-        email: data.user.email,
+    // Cargamos el perfil del usuario. Esto lo dejamos corriendo en paralelo (noten que no está el await).
+    loadCurrentUserProfile();
+}
+
+/**
+ * Carga el perfil extendido del usuario autenticado.
+ */
+async function loadCurrentUserProfile() {
+    try {
+        const profile = await getUserProfileByPK(user.id);
+        
+        updateUser({
+            ...profile,
+        });
+    } catch (error) {
+        console.error('[auth.js loadCurrentUserProfile] Error al obtener el perfil del usuario: ', error);
+        throw error;
     }
-    notifyAll(); */
 }
 
 /**
  * 
  * @param {string} email 
  * @param {string} password 
- * @returns {Promise} 
+ * @returns {Promise}
  */
-
 export async function register(email, password) {
-
-    // Registramos el usuario en Supabase.
     const { data, error } = await supabase.auth.signUp({
-        email,
+        email, 
         password,
     });
 
-    // Si hay un error, lo lanzamos.
-    if (error) {
-        console.error("[auth.js register] Error al registrar el usuario: ", error);
+    if(error) {
+        console.error('[auth.js register] Error al registrarse: ', error);
         throw error;
     }
 
     // Creamos el perfil del usuario.
     try {
         await addUserProfile({
+            // Al perfil del usuario le pasamos el id del usuario que se acaba de crear.
             id: data.user.id,
             email,
         });
     } catch (error) {
-        console.error("[auth.js register] Error al crear el perfil del usuario: ", error);
-        throw error;
+        console.error('[auth.js register] Error al crear el perfil del usuario: ', error);
+        
     }
 
     // Actualizamos los datos del usuario, y notificamos a los observers.
@@ -95,29 +109,17 @@ export async function register(email, password) {
         email: data.user.email,
     });
 
-    // Actualizamos los datos del usuario, y notificamos a los observers.
-    /* user = {
-        ...user,
-        id: data.user.id,
-        email: data.user.email,
-    }
-    notifyAll(); */
-    // Retornamos los datos del usuario.
-    console.log("[auth.js register] Usuario registrado exitosamente:", data);
     return data.user;
 }
 
 export async function login(email, password) {
-
-    // Logueamos el usuario en Supabase.
     const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
     });
 
-    // Si hay un error, lo lanzamos.
-    if (error) {
-        console.error("[auth.js login] Error al loguear el usuario: ", error);
+    if(error) {
+        console.error('[auth.js login] Error al iniciar sesión: ', error);
         throw error;
     }
 
@@ -127,21 +129,13 @@ export async function login(email, password) {
         email: data.user.email,
     });
 
-    /* user = {
-        ...user,
-        id: data.user.id,
-        email: data.user.email,
-    }
-    notifyAll(); */
+    // Cargamos el resto del perfil.
+    loadCurrentUserProfile();
 
-    // Retornamos los datos del usuario.
-    console.log("[auth.js login] Usuario logueado exitosamente:", data);
     return data.user;
 }
 
 export async function logout() {
-
-    // Cerramos la sesión en Supabase.
     supabase.auth.signOut();
 
     // Vaciamos el usuario.
@@ -149,15 +143,27 @@ export async function logout() {
         id: null,
         email: null,
     });
-
-    /* user = {
-        id: null,
-        email: null,
-    }
-    notifyAll(); */
-    console.log("[auth.js logout] Usuario cerró sesión exitosamente.");
+    // user = {
+    //     id: null,
+    //     email: null,
+    // }
+    // notifyAll();
 }
 
+/**
+ * Actualiza el perfil del usuario autenticado.
+ * 
+ * @param {{bio: string|null, career: string|null, display_name: string|null}} data 
+ */
+export async function updateAuthProfile(data) {
+    try {
+        await updateUserProfile(user.id, { ...data });
+        updateUser(data);
+    } catch (error) {
+        console.error('[auth.js updateAuthProfile] Error al actualizar el perfil del usuario autenticado: ', error);
+        throw error;
+    }
+}
 
 /*--------------------------------------------------------------------
 | Métodos del observer

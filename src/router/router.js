@@ -1,21 +1,35 @@
 /*
 Archivo del router de nuestra aplicación.
 */
-import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../pages/Home.vue';
-import GlobalChat from '../pages/GlobalChat.vue';
-import Login from '../pages/Login.vue';
-import Register from '../pages/Register.vue';
-import { subscribeToAuth } from '../services/auth';
-import MyProfile from '../pages/MyProfile.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import Home from "../pages/Home.vue";
+import GlobalChat from "../pages/GlobalChat.vue";
+import Login from "../pages/Login.vue";
+import Register from "../pages/Register.vue";
+import { subscribeToAuth } from "../services/auth";
+import MyProfile from "../pages/MyProfile.vue";
+import MyProfileEdit from "../pages/MyProfileEdit.vue";
+import UserProfile from "../pages/UserProfile.vue";
 
 // Definimos las rutas de nuestra aplicación.
+// Los campos "meta" de las rutas aceptan un objeto con cualquier dato. Ese dato va a quedar asociado a la ruta.
+// No hay ningún dato preexistente en "meta", los inventan a voluntad.
 const routes = [
-    { path: '/',                component: Home, },
-    { path: '/ingresar',        component: Login, },
-    { path: '/registro',        component: Register, },
-    { path: '/chat-global',     component: GlobalChat, meta: { requiresAuth: true, }, },
-    { path: '/mi-perfil',       component: MyProfile, meta: { requiresAuth: true, }, },
+    { path: "/", component: Home },
+    { path: "/ingresar", component: Login },
+    { path: "/registro", component: Register },
+    { path: "/chat-global", component: GlobalChat, meta: { requiresAuth: true } },
+    { path: "/mi-perfil", component: MyProfile, meta: { requiresAuth: true } },
+    {
+        path: "/mi-perfil/editar",
+        component: MyProfileEdit,
+        meta: { requiresAuth: true },
+    },
+    {
+        path: "/usuario/:id",
+        component: UserProfile,
+        meta: { requiresAuth: true },
+    },
 ];
 
 // Creamos el router.
@@ -30,12 +44,12 @@ const router = createRouter({
     history: createWebHistory(),
 });
 
-// Aquí subscribimos a la función de autenticación.
+// Nos suscribimos a la autenticación.
 let user = {
     id: null,
     email: null,
-}
-subscribeToAuth((newUserData) => user = newUserData);
+};
+subscribeToAuth((newUserData) => (user = newUserData));
 
 // Agregamos un "guard" global para nuestro router.
 router.beforeEach((to, from) => {
@@ -45,9 +59,9 @@ router.beforeEach((to, from) => {
     // console.log("To: ", to);
 
     // Si la ruta requiere que el usuario esté autenticado, y no lo está, entonces lo "pateamos" al login.
-    if(to.meta.requiresAuth && user.id === null) {
+    if (to.meta.requiresAuth && user.id === null) {
         // Retornamos la URL a donde lo queremos mandar.
-        return '/ingresar';
+        return "/ingresar";
     }
 });
 
